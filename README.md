@@ -11,4 +11,14 @@ Is an extreme simple script to show all directories from a given path (or curren
     Start from directory /home/gdhaese1/bin
     Directory /home/gdhaese1/bin contains 47 files
     
+## fix-TLS-Logjam-vulnerability.sh
+Is a script to scan and fix the OpenSSL LogJam issue in httpd.conf file. It works on HP-UX and Linux, but it should alos work on Solaris (untested).
+
+## nanosleep.c
+Is a simple C program to implement nanosleep intervals. The default value is 500 (=0.5 second) and it accepts a value between 1 and 999 (0.999 second or 1 second). It generates no output unless it detects an error then it shows the usage.
+
+To compile use cc or gcc:
+
+    $ cc nanosleep.c -o nanosleep
+
 
