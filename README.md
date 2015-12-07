@@ -21,4 +21,21 @@ To compile use cc or gcc:
 
     $ cc nanosleep.c -o nanosleep
 
+## timeout.c
+A C program based on cratimeout.c, but using seconds as timeout values (instead of milleseconds). To compile use cc or gcc:
+
+    $ cc -o timeout timeout.c
+
+The usage is equivalent as of the timeout command on Linux:
+
+    $ ./timeout 1 sleep 3
+    Terminated
+    $ echo $?
+    143
+    $ ./timeout 1 ls
+    ...
+    $ echo $?
+    0
+    $ ./timeout
+    Usage: ./timeout seconds cmd args
 
