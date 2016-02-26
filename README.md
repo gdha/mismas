@@ -40,10 +40,10 @@ The usage is equivalent as of the timeout command on Linux:
     Usage: ./timeout seconds cmd args
 
 ## shrc.hpux
-A shell script to change the prompt to some like:
+A shell script to change the prompt to something like (on HP-UX):
 
     [gdha@jupiter:/.root:160226.145608]
 
-Where date and timestamp automiticallu change per command. Perfect in log files and for audit reasons.
-In the `/etc/profile` add `ENV=/etc/shrc.hpux ; export ENV` to activate it the next time you login.
+Date and timestamp automitically change per command executed, which is perfect in log files and for audit reasons.
+In the `/etc/profile` script add `ENV=/etc/shrc.hpux ; export ENV` to activate it the next time you login.
 
