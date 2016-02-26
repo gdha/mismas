@@ -1,0 +1,35 @@
+################################################################################
+# This script is for HP-UX 11i systems
+# Add to the /ect/profile the following 2 lines:
+#  ENV=/etc/shrc.hpux
+#  export ENV
+# And you get a nice prompt like:
+# [gdha@jupiter:/.root:160226.145608]
+################################################################################
+
+
+# test if we are in interactive mode; if not just exit 0
+if [[ -t 0 ]]; then
+
+NN="$(uname -n)"                     # NodeName
+UN="$(who am i 2>/dev/null | awk '{print $1}')"  # UserName
+[[ -z "$UN" ]] && UN="$(whoami)"
+NAME="${UN}@${NN}" 
+
+export DATE="$(date '+%y%m%d')"
+export SECONDS="$(date '+3600*%H+60*%M+%S')"
+typeset -Z2 _h; typeset -Z2 _m ; typeset -Z2 _s
+_hh="(SECONDS/3600)%24"
+_mm="(SECONDS/60)%60"
+_ss="(SECONDS)%60"
+_time='${_x[(_m=_mm)==(_h=_hh)==(_s=_ss)]}$_h$_m$_s'
+
+# customise PS1 prompt
+PROMPT="$ "
+[[ $(id -u) -eq 0 ]] && PROMPT="#-> "
+PS1="[$(echo '${UN}@${NN}:${PWD}\:'"${DATE}.${_time}]")
+${PROMPT}"
+export PS1
+set +u
+
+fi # end of [[ -t 0 ]]
