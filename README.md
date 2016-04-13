@@ -47,3 +47,7 @@ A shell script to change the prompt to something like (on HP-UX):
 Date and timestamp automitically change per command executed, which is perfect in log files and for audit reasons.
 In the `/etc/profile` script add `ENV=/etc/shrc.hpux ; export ENV` to activate it the next time you login.
 
+## lan_monitoring.sh
+Script for HP-UX systems only to assist in LAN cable migration tasks. Script was used during migration of CISCO switches and
+with this script we were able to follow LAN status during the migration phase.
+
