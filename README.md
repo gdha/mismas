@@ -51,3 +51,18 @@ In the `/etc/profile` script add `ENV=/etc/shrc.hpux ; export ENV` to activate i
 Script for HP-UX systems only to assist in LAN cable migration tasks. Script was used during migration of CISCO switches and
 with this script we were able to follow LAN status during the migration phase.
 
+## make_rear_diskrestore_script.sh
+Purpose of this script is to simulate the `rear recover` section
+which creates the `/var/lib/rear/layout/diskrestore.sh` script.
+It can be run on a production system and will not interfere with
+anything. The output has been made safe if we run it by accident
+so it does not overwrite your disk partition or wipe the boot disk.
+However, consider this as a warning - handle with extreme care.
+The output is meant for debugging purposes only (so you can see what
+a recover would execute to recreate your boot disk layout).
+Or, in case you are completely lost you can open an issue at
+https://github.com/rear/rear/issues
+But, if you expect an answer (on the diskrestore output) a rear
+subscription, rear support contract or donation is required.
+See details at http://relax-and-recover.org/support/sponsors
+
