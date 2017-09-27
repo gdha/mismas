@@ -67,5 +67,13 @@ subscription, rear support contract or donation is required.
 See details at http://relax-and-recover.org/support/sponsors
 
 ## check_write_access.sh
-Simplistic script to sum up all groups who have read/write rights on a directory structure - to be correct I'm talking about ACLs not simple Unix groups. Scripts should work on all kind of Unix/Linux systems. The output is in CSV format. The input argument is a starting directory or can be empty, but then the current directory is used as starting point.
+Simplistic script to sum up all groups who have read/write rights on a directory structure - to be correct I am talking about ACLs not simple Unix groups. Scripts should work on all kind of Unix/Linux systems. The output is in CSV format. The input argument is a starting directory or can be empty, but then the current directory is used as starting point.
+
+## show_vm_snapshot_backups.sh
+This script will display the Virtual Machine Snapshot overview made by NetBackup Data Domain.
+
+    $ bin/show_vm_snapshot_backups.sh -h
+    Usage: show_vm_snapshot_backups.sh [-i inventory] tier
+    [tier] is the ansible group name found in an inventory file of ansible
+
 
