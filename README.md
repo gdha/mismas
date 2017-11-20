@@ -76,4 +76,5 @@ This script will display the Virtual Machine Snapshot overview made by NetBackup
     Usage: show_vm_snapshot_backups.sh [-i inventory] tier
     [tier] is the ansible group name found in an inventory file of ansible
 
-
+## rebase_myfork_rear.sh
+Simple script that can be used to rebase your personal fork of Relax-and-Recover (ReaR) with the master branch. Once the rebase is done you can hack on ReaR and make your pull request with the master branch. By doing this your code will be actual to the latest ReaR master branch and you do not have to fix code that was already fix by others.
