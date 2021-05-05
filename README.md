@@ -78,3 +78,6 @@ This script will display the Virtual Machine Snapshot overview made by NetBackup
 
 ## rebase_myfork_rear.sh
 Simple script that can be used to rebase your personal fork of Relax-and-Recover (ReaR) with the master branch. Once the rebase is done you can hack on ReaR and make your pull request with the master branch. By doing this your code will be actual to the latest ReaR master branch and you do not have to fix code that was already fix by others.
+
+## rear2docker.sh
+Script to generate a container image of the root file system of a ReaR recovery image. Just for the fun of it ;-)
