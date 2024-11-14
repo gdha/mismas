@@ -81,3 +81,6 @@ Simple script that can be used to rebase your personal fork of Relax-and-Recover
 
 ## rear2docker.sh
 Script to generate a container image of the root file system of a ReaR recovery image. Just for the fun of it ;-)
+
+## make-zero-files.sh
+Script to create zero-files under all mounted file systems which will be removed again so we have a much better compression ratio with 'dd'.
