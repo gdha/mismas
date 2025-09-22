@@ -32,6 +32,9 @@ readonly CMD_OPTS=( "$@" )
 # Allow workflows to set the exit code to a different value (not "readonly"):
 EXIT_CODE=0
 
+# The default target mount point prefix
+TARGET_FS_ROOT="/mnt/local"
+
 # Are we root?
 if test "$( id --user )" != "0" ; then
     echo "ERROR: $SCRIPT needs ROOT privileges!"
