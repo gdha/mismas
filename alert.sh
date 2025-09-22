@@ -13,14 +13,6 @@ VERSION="1.0"
 export LANG="en_US.UTF-8"    # make sure we use UTF-8 during text processing
 HOSTNAME=$(/usr/bin/hostname)
 
-# Get the tier value to which this system belongs (sandbox, developmnt, qa , uat or production)
-# Most likely the /etc/tier file only exist on Treasury Linux systems.
-[[ -f /etc/tier ]] && ENVIRONMENT=$(cat /etc/tier)
-
-# When the ENVIRONMENT part was commented out in the configuration file we have the next block to rescue
-if [[ "$ENVIRONMENT" = "" ]]; then
-  [[ -x /bin/ohai ]] && ENVIRONMENT=$(/bin/ohai | grep -i scm_appbranch | cut -d\" -f4)
-fi
 
 CONFIG="/etc/alert.conf"
 TITLE=""
@@ -163,15 +155,24 @@ else
     source "$CONFIG"
 fi
 
+if [[ -z "$ENVIRONMENT" ]] ; then
+    # Get the tier value to which this system belongs (sandbox, developmnt, qa , uat or production)
+    # Most likely the /etc/tier file only exist on Treasury Linux systems.
+    [[ -f /etc/tier ]] && ENVIRONMENT=$(cat /etc/tier)
+
+    # When the ENVIRONMENT part was commented out in the configuration file we have the next block to rescue
+    if [[ -z "$ENVIRONMENT" ]]; then
+      [[ -x /bin/ohai ]] && ENVIRONMENT=$(/bin/ohai | grep -i scm_appbranch | cut -d\" -f4)
+    fi
+fi
+if [[ -z "$ENVIRONMENT" ]] ; then
+    error "$PROGNAME -e \"environment\" not set or not defined in $CONFIG"
+fi
 # Make sure that the ENVIRONMENT value is lowercase for the remaining part of this program
 ENVIRONMENT="$( echo ${ENVIRONMENT,,} )"
-if [[ -z "$ENVIRONMENT" ]] ; then
-    show_usage 1
-fi
-# INFO: correct tier value is saved under the ENVIRONMENT variable
 
 if [[ -z "$TITLE" ]] ; then
-    error "$PROGNAME -T \"title\" - missing title message"
+    error "$PROGNAME -t \"title\" - missing title message"
 fi
 
 # When BODY variable is filled in then do not check FILE anymore
@@ -189,7 +190,7 @@ BODY="$(echo $BODY | sed -e 's/"/:/g')"
 
 color=Warning
 HEADER="Alert on $(hostname -s) ($ENVIRONMENT)"
-BOTTOM_MESSAGE="Alert message generated on system $(hostname -s) (tier ${ENVIRONMENT} - date $(date '+%F'))"
+BOTTOM_MESSAGE="Message generated on system $(hostname -s) ($ENVIRONMENT: $(date '+%F'))"
 
 JSON="{\"type\":\"message\",\"attachments\":[{\"contentType\":\"application/vnd.microsoft.card.adaptive\",\"contentUrl\":null,\"content\":{\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\",\"type\":\"AdaptiveCard\",\"version\":\"1.4\",\"body\":[{\"type\": \"ColumnSet\",\"columns\": [ { \"type\": \"Column\",\"targetWidth\": \"atLeast:narrow\",\"items\": [{\"type\": \"Image\",\"style\": \"Person\",\"url\": \"${IMAGE_URL}\",\"size\": \"Medium\"}], \"width\": \"auto\" }, { \"type\": \"Column\", \"spacing\": \"medium\", \"verticalContentAlignment\": \"center\", \"items\": [{\"type\": \"TextBlock\",\"text\": \"${HEADER}\",\"size\": \"ExtraLarge\",\"color\": \"${color}\"}],\"width\": \"auto\" }]},{ \"type\": \"TextBlock\", \"text\": \"${TITLE}\", \"weight\": \"bolder\", \"size\": \"Large\" },{\"type\": \"TextBlock\",\"text\": \"${BODY} \",\"wrap\": \"true\"},{\"type\": \"TextBlock\",\"text\": \"*${BOTTOM_MESSAGE}*\",\"wrap\": \"true\"}],\"msteams\": {\"width\": \"Full\"}}}]}"
 
