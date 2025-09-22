@@ -32,7 +32,8 @@ FILE=""
 IMAGE_URL="https://www.energise.co.nz/wp-content/uploads/2016/04/Prove-you-are-not-a-robot-and-digitalise-books-and-refine-maps.jpg"
 # ReaR logo:
 # IMAGE_URL="https://it3.be/images/logo/rear_logo_100.png"
-
+WEBHOOK_URL=""
+ENVIRONMENT=""
 
 #############
 # Functions #
