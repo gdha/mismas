@@ -23,6 +23,7 @@ IMAGE_URL="https://www.energise.co.nz/wp-content/uploads/2016/04/Prove-you-are-n
 # ReaR logo:
 # IMAGE_URL="https://it3.be/images/logo/rear_logo_100.png"
 WEBHOOK_URL=""
+ENVIRONMENT=""
 
 #############
 # Functions #
@@ -31,14 +32,15 @@ WEBHOOK_URL=""
 function show_usage ()
 {
     # input value: exit code
-    echo "Usage: alert [-e|--environment] tier [[-c|--config] configuration-file] [[-t|--title] \"TITLE line\"] [[-b|--body] \"body text\"] [[-f|--file] file for body text] [[-i|--image \"URL-of-picture\"]" 
+    echo "Usage: alert [-e|--environment] tier [[-c|--config] configuration-file] [[-t|--title] \"TITLE line\"] [[-b|--body] \"body text\"] [[-f|--file] file for body text] [[-i|--image] \"URL-of-picture\"] [[-w|--webhook] \"URL-of-workflow\"]" 
     printf "\nAvailable options:\n"
-    echo "-e|--environment  tier e.g. sandbox, developmnet, qa, uat or production (optional)"
+    echo "-e|--environment  tier e.g. sandbox, developmnet, qa, uat or production (optional - defined in $CONFIG)"
     echo "-c|--config       configuration: is configuration file file (optional - default $CONFIG)"
     echo "-t|--title        title message (required)"
     echo "-b|--body         body text (optional when --file is used)"
     echo "-f|--file         read body text from file or stdin (required when --body is not used)"
     echo "-i|--image        Logo graph URL (optional)"
+    echo "-w|--webhook      URL of the MS Teams workflow (optional - defined in $CONFIG)"
     echo "-h|--help         show usage (optional)"
     echo "-v|--version      show version (optional)"
     exit $1
@@ -70,7 +72,7 @@ fi
 # Examples at https://davetang.org/muse/2023/01/31/bash-script-that-accepts-short-long-and-positional-arguments/
 help_note_text="Use '$PROGNAME --help' or 'man $PROGNAME' for more information."
 
-if ! OPTS="$( getopt -n $PROGNAME -o "e:c:t:b:f:i:hv" -l "environment:,config:,title:,body:,file:,image:,help,version" -- "$@" )" ; then
+if ! OPTS="$( getopt -n $PROGNAME -o "e:c:t:b:f:i:w:hv" -l "environment:,config:,title:,body:,file:,image:,webhook:,help,version" -- "$@" )" ; then
     echo "$help_note_text"
     exit 1
 fi
@@ -102,7 +104,7 @@ while true ; do
             shift                 ;;
         (-t|--title)
             if [[ "$2" == -* ]] ; then
-                echo "-T requires an argument."
+                echo "-t requires an argument."
                 echo "$help_note_text"
                 exit 1
             fi
@@ -132,6 +134,14 @@ while true ; do
             fi
             IMAGE_URL="$2"
             shift                 ;;
+        (-w|--webhook)
+            if [[ "$2" == -* ]] ; then
+                echo "-w requires an argument."
+                echo "$help_note_text"
+                exit 1
+            fi
+            WEBHOOK_URL="$2"
+            shift                 ;;
         (--)
             shift
             break                 ;;
@@ -145,13 +155,7 @@ while true ; do
     shift
 done
 
-# Check the configuration file
-if [[ -z "$CONFIG" ]] ; then
-    show_usage 1
-fi
-if [[ ! -f "$CONFIG" ]] ; then
-    error "$PROGNAME -c $CONFIG - configuration file $CONFIG not found"    
-else
+if [[ -f "$CONFIG" ]] ; then
     source "$CONFIG"
 fi
 
@@ -168,8 +172,13 @@ fi
 if [[ -z "$ENVIRONMENT" ]] ; then
     error "$PROGNAME -e \"environment\" not set or not defined in $CONFIG"
 fi
+
 # Make sure that the ENVIRONMENT value is lowercase for the remaining part of this program
 ENVIRONMENT="$( echo ${ENVIRONMENT,,} )"
+
+if [[ -z "$WEBHOOK_URL" ]] ; then
+    error "${PROGNAME}: -w \"WEBHOOK_URL\" not set or not defined in $CONFIG"
+fi
 
 if [[ -z "$TITLE" ]] ; then
     error "$PROGNAME -t \"title\" - missing title message"
