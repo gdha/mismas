@@ -146,7 +146,7 @@ void get_current_date(char *buf, size_t sz) {
 
 // Print usage
 void show_usage(int code) {
-    printf("Usage: alert [[-c|--config] configuration-file] [[-e|--environment] environment] [[-t|--title] \"TITLE line\"] [[-b|--body] \"body text\"] [[-f|--file] file for body text] [[-i|--image \"URL\"]] [[-w|--webhook \"URL\"]] [[-h|--help]] [[-v|--version]]\n");
+    printf("Usage: alert [[-c|--config] configuration-file] [[-e|--environment] environment] [[-t|--title] \"TITLE line\"] [[-b|--body] \"body text\"] [[-f|--file] file for body text] [[-i|--image] \"URL\"] [[-w|--webhook] \"URL\"] [[-h|--help]] [[-v|--version]]\n");
     printf("-e, --environment environment value (overrides config ENVIRONMENT and detection)\n");
     printf("-c, --config      configuration file (optional - default %s)\n", CONFIG_DEFAULT);
     printf("-t, --title       title message (required)\n");
