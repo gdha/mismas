@@ -3,7 +3,10 @@
  * Based on alert.sh, ENVIRONMENT-driven version (no TIER logic)
  * To compile we need to install "libcurl-devel" package on EL9
  * Compile as: gcc -o alert alert.c -lcurl
+ * Author: Gratien D'haese
+ * Copyright: GPLv3
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,9 +19,9 @@
 #include <sys/select.h>
 #include <errno.h>
 
+#define VERSION "1.0"
 #define CONFIG_DEFAULT "/etc/alert.conf"
 #define IMAGE_URL_DEFAULT "https://www.energise.co.nz/wp-content/uploads/2016/04/Prove-you-are-not-a-robot-and-digitalise-books-and-refine-maps.jpg"
-#define VERSION "1.0"
 #define PROGNAME "alert"
 #define TIER_FILE "/etc/tier"
 #define OHAI_BIN "/bin/ohai"

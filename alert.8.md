@@ -1,80 +1,127 @@
-# alert (8) -- Tool to send messages to MS Teams Workflows
+# alert(8) — Tool to Send Messages to MS Teams Workflows
 
+## NAME
+
+**alert** — send messages to Microsoft Teams channels or workflows via Power Automate
 
 ## SYNOPSIS
 
-`alert` [`-c|--config`] _configuration-file_ [`-e|--environment`] _environment_ [`-t|--title`] _"TITLE line"_ [`-b|--body`] _"body text"_ [`-f|--file`] _file-for-body-text_ [`-i|--image`] _"URL"_ [`-w|--webhook`] _"URL"_ [`-h|--help`] [`-v|--version`]
+`alert` [**-c** | **--config** _configuration-file_] [**-e** | **--environment** _environment_] [**-t** | **--title** _"TITLE line"_] [**-b** | **--body** _"body text"_] [**-f** | **--file** _file-for-body-text_] [**-i** | **--image** _"URL"_] [**-w** | **--webhook** _webhook-URL_] [**-h** | **--help**] [**-v** | **--version**]
 
 ## DESCRIPTION
 
-The `alert` command is a tool to send messages to existing MS Teams channels or work flows based on Power Automation.
-The body message can be given via the command line via the `--body` argument, or via the `--file` argument or via standard input.
+**alert** is a command-line utility for sending messages to Microsoft Teams channels or workflows using Power Automate. It is designed for automation and scripting, enabling quick notifications or status updates from shell scripts or system tools.
+
+The message body can be provided via:
+
+- the `--body` argument (direct text input)
+- the `--file` argument (read from a file or standard input)
+- standard input (if `--file` is specified as `-` or omitted and input is piped)
 
 ## CONFIGURATION
 
-It is important to know that the package does *not* contain a configuration file! It is not an absolute requirement, but it is highly recommended to create one.
-The configuration file, when not given on the command line, is stored on the default location `/etc/alert.conf` on Linux. On Windows the default location is `C:\Program Files\Common Files\Alert\alert.conf`.
+The **alert** tool does *not* include a default configuration file. However, it is strongly recommended to create a configuration file for easier use.
 
-The configuration file contains two variable settings:
+### Configuration File Location
 
-* ENVIRONMENT=_environment_
-* WEBHOOK_URL=_URL_
+- **Linux:** `/etc/alert.conf` (default if not specified)
+- **Windows:** `C:\Program Files\Common Files\Alert\alert.conf`
 
-The `ENVIRONMENT` is optional as it can also be retrieved from the `/etc/tier` file or via the `/bin/ohai` command if present. The most common settings for `ENVIRONMENT` are:
+You can override the default location with the `--config` option.
 
-* sandbox
-* development
-* qa
-* uat
-* production
+### Configuration File Format
 
-However, it can be anything you like it to be.
+The configuration file supports two settings:
 
-The `WEBHOOK_URL` must be a valid MS Teams Work flow URL as otherwise you will get an error message like an HTTP 405 "Method Not Allowed" status code.
+- `ENVIRONMENT=_environment_`  
+  (Optional. Can also be detected from `/etc/tier` or via `/bin/ohai` Chef command if present.)
+- `WEBHOOK_URL=_URL_`  
+  (Required; must be a valid MS Teams Power Automate webhook URL.)
 
-Example of `/etc/alert.conf`:
+Example `/etc/alert.conf`
 
     ENVIRONMENT=sandbox
-    WEBHOOK_URL=https://default3ac94b33913548219502eafda6592a.35.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/e2aabfb017ea4019a2a21d7cadae68c7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=NxWZCxWioBUzDY-UPYbHmBr-VGFuhlvLN2EqDZVbr8g
+    WEBHOOK_URL=https://example.powerplatform.com/powerautomate/automations/direct/workflows/xyz/triggers/manual/paths/invoke
 
+**ENVIRONMENT**  
+Common values: `sandbox`, `development`, `qa`, `uat`, `production`, or any string you prefer.
+
+**WEBHOOK_URL**  
+Must be a valid URL for your MS Teams workflow. An invalid URL will result in HTTP errors, such as status code 405 "Method Not Allowed".
 
 ## OPTIONS
 
-    Usage: alert [[-c|--config] configuration-file] [[-e|--environment] environment] [[-t|--title] "TITLE line"] [[-b|--body] "body text"] [[-f|--file] file for body text] [[-i|--image] "URL"] [[-w|--webhook] "URL"] [[-h|--help]] [[-v|--version]]
-    -e, --environment environment value (overrides config ENVIRONMENT and detection)
-    -c, --config      configuration file (optional - default /etc/alert.conf)
-    -t, --title       title message (required)
-    -b, --body        body text (optional when --file is used)
-    -f, --file        read body text from file or stdin (required when --body is not used)
-    -i, --image       Logo graph URL (optional)
-    -w, --webhook     webhook URL (overrides config WEBHOOK_URL)
-    -h, --help        show usage (optional)
-    -v, --version     show version (optional)
-    
-    For all options read the man page "man alert"
+| Option                | Description                                                                               |
+|-----------------------|-------------------------------------------------------------------------------------------|
+| **-c**, **--config** *file*      | Specify configuration file (default: `/etc/alert.conf`)                               |
+| **-e**, **--environment** *env*  | Specify environment (overrides config and auto-detection)                            |
+| **-t**, **--title** *text*       | Title line for message (**required**)                                               |
+| **-b**, **--body** *text*        | Body text (optional if `--file` is used)                                           |
+| **-f**, **--file** *file*        | Read body text from file or stdin (required if `--body` is not used)                |
+| **-i**, **--image** *url*        | URL for logo/image (optional)                                                      |
+| **-w**, **--webhook** *url*      | Webhook URL (overrides config value)                                                |
+| **-h**, **--help**               | Display usage information                                                           |
+| **-v**, **--version**            | Display version information                                                         |
 
+* **--config** *file*:
+To overrurle the default configuration file `/etc/alert.conf`. However, it must contain at least a line like:
+
+    WEBHOOK_URL=https://example.powerplatform.com/powerautomate/automations/direct/workflows/xyz/triggers/manual/paths/invoke
+
+The `ENVIRONMENT` setting may still be retrieved from the `/etc/tier` file (if found), or via the Chef command `ohai`. If the
+ENVIRONMENT is not found at all it will become the default setting `development`.
+
+* **--environment** *env*:
+To overrule the setting found in the configuration file. It can be any word as it is only used to be displayed in the header line in parentheses, e.g. `Alert on <hostname> (sandbox)`.
+
+* **--title** *text*:
+The text line is displayed as a bold line.
+
+* **--body** *text*:
+This is an one line text to display in the body section of the work flow message.
+
+* **--file** *file*:
+The body message can also be read from a file or from the standard input if both **--body** and **--title** arguments are missing on the command line. However, via the standard input there is a fixed time-out defined of 10 seconds to start entering your body text.
+
+* **--image** *url*:
+There is a default image defined (a black and white robot logo), however you may overrule it with another URL (only https:// is allowed). Keep in mind the maximum width is 279 pixels and the maximum height is 313 pixels of the image.
+
+* **--webhook** *url*:
+The URL (only https:// is allowed) of the MS Teams Power AUtomation channel.
+
+* **--help**:
+Shows the **alert** usage.
+
+* **--version**:
+Shows the **alert** version.
+ 
 ## EXAMPLES
 
-Example 1: if a required paramter is missing it will generate an error:
+**1. Error when required parameter is missing:**
+
 
     $ alert -e sbx -b "some text."
     Missing required --title argument.
 
-Example 2: if `alert` found a valid configuration file (default location `/etc/alert.conf`), and has the required arguments (body and title) then we will receive a message in the MS Teams Channel corresponding with the given WEBHOOK_URL.
+
+**2. Sending a message with a body and title (using configuration file):**
 
     $ alert -e sbx -b "some text." -t "Title"
 
-Example 3: the body content is now coming from a file (`/etc/tier`), the title is given on the command line. The environment has been retrieved from the `/etc/tier` file, or from the output of `/bin/ohai`.
+**3. Reading message body from a file, auto-detecting environment:**
 
     $ alert --file /etc/tier -t "TIER"
 
-Example 4: We use the standard input to feed the body text.
+**4. Reading body from standard input:**
 
-    $ cat /etc/hosts| alert  -t "HOSTS"
-    Reading body from stdin...
+    $ cat /etc/hosts | alert -t "HOSTS"
+    Reading body from stdin (timeout 10 seconds)...
 
+## SEE ALSO
+
+- Microsoft Teams documentation
+- Power Automate documentation
 
 ## AUTHOR
 
-Gratien D'haese <gdhaese1 @ its.jnj.com>
-
+Gratien D'haese <gdhaese1@its.jnj.com>
