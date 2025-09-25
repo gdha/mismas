@@ -6,7 +6,7 @@
 
 ## SYNOPSIS
 
-`alert` [**-c** | **--config** _configuration-file_] [**-e** | **--environment** _environment_] [**-t** | **--title** _"TITLE line"_] [**-b** | **--body** _"body text"_] [**-f** | **--file** _file-for-body-text_] [**-i** | **--image** _"URL"_] [**-w** | **--webhook** _webhook-URL_] [**-h** | **--help**] [**-v** | **--version**]
+`alert` [**-c**, **--config** _configuration-file_] [**-e**, **--environment** _environment_] [**-t**, **--title** _"TITLE line"_] [**-b**, **--body** _"body text"_] [**-f**, **--file** _file-for-body-text_] [**-i**, **--image** _URL_] [**-w**, **--webhook** _webhook-URL_] [**-h**, **--help**] [**-v**, **--version**]
 
 ## DESCRIPTION
 
@@ -24,8 +24,8 @@ The **alert** tool does *not* include a default configuration file. However, it 
 
 ### Configuration File Location
 
-- **Linux:** `/etc/alert.conf` (default if not specified)
-- **Windows:** `C:\Program Files\Common Files\Alert\alert.conf`
+- **Linux:** `/etc/alert.conf` (default when not specified)
+- **Windows:** `C:\Program Files\Common Files\Alert\alert.conf` (default)
 
 You can override the default location with the `--config` option.
 
@@ -51,20 +51,37 @@ Must be a valid URL for your MS Teams workflow. An invalid URL will result in HT
 
 ## OPTIONS
 
-| Option                           | Description                                                |
-|----------------------------------|------------------------------------------------------------|
-| **-c**, **--config** *file*      | Specify configuration file (default: /etc/alert.conf)      |
-| **-e**, **--environment** *env*  | Specify environment (overrides config and auto-detection)  |
-| **-t**, **--title** *text*       | Title line for message (**required**)                      |
-| **-b**, **--body** *text*        | Body text (optional if --file is used)                     |
-| **-f**, **--file** *file*        | Read body text from file or stdin                          |
-| **-i**, **--image** *url*        | URL for logo or image (optional)                           |
-| **-w**, **--webhook** *url*      | Webhook URL (overrides config value)                       |
-| **-h**, **--help**               | Display usage information                                  |
-| **-v**, **--version**            | Display version information                                |
+### Short description
+
+**-c**, **--config** *file*
+:   Specify configuration file (default: /etc/alert.conf)
+
+**-e**, **--environment** *env*
+:   Specify environment (overrides config and auto-detection)
+
+**-t**, **--title** *text*
+:   Title line for message (**required**)
+
+**-b**, **--body** *text*
+:   Body text (optional if --file is used)
+
+**-f**, **--file** *file*
+:   Read body text from file or stdin
+
+**-i**, **--image** *url*
+:   URL for logo or image (optional)
+
+**-w**, **--webhook** *url*
+:  Webhook URL (overrides config value)
+
+**-h**, **--help**
+:  Display usage information
+
+**-v**, **--version**
+:  Display version information
 
 
-### GLOBAL OPTIONS
+### Options explained
 
 * **--config** *file*:
 To overrurle the default configuration file `/etc/alert.conf`. However, it must contain at least a line like:
@@ -111,7 +128,7 @@ Shows the **alert** version.
 
     $ alert -e sbx -b "some text." -t "Title"
 
-**3. Reading message body from a file, auto-detecting environment:**
+**3. Reading message body from a file, auto-detecting environment and webhook_url from the default configuration file `/etc/alert.conf`:**
 
     $ alert --file /etc/tier -t "TIER"
 
@@ -127,4 +144,12 @@ Shows the **alert** version.
 
 ## AUTHOR
 
-Gratien D'haese <gdhaese1@its.jnj.com>
+Gratien D'haese
+
+## COPYRIGHT
+
+(c) 2025-
+
+The copyright is held by the original author(s).
+
+**alert** comes with ABSOLUTELY NO WARRANTY; for details see theGNU General Public License v3
