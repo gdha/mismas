@@ -13,6 +13,8 @@
 #include <sys/utsname.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <sys/select.h>
+#include <errno.h>
 
 #define CONFIG_DEFAULT "/etc/alert.conf"
 #define IMAGE_URL_DEFAULT "https://www.energise.co.nz/wp-content/uploads/2016/04/Prove-you-are-not-a-robot-and-digitalise-books-and-refine-maps.jpg"
@@ -20,6 +22,7 @@
 #define PROGNAME "alert"
 #define TIER_FILE "/etc/tier"
 #define OHAI_BIN "/bin/ohai"
+#define STDIN_TIMEOUT_SEC 10
 
 // Helper function to trim newline and trailing spaces
 void trim_newline(char *str) {
@@ -87,7 +90,12 @@ int read_environment_ohai(char *env, size_t envsz) {
     return 0;
 }
 
-// Read body from file or stdin
+// Helper to check if a string starts with "https://"
+int is_https_url(const char *url) {
+    return (strncmp(url, "https://", 8) == 0);
+}
+
+// Read body from file or stdin, with timeout on stdin
 char* read_body(const char *file) {
     FILE *f = stdin;
     if (file) {
@@ -96,7 +104,30 @@ char* read_body(const char *file) {
             fprintf(stderr, "Could not open body file: %s\n", file);
             exit(1);
         }
+    } else {
+        // Only set timeout if reading from stdin interactively
+        fprintf(stderr, "Reading body from stdin (timeout %d seconds)...\n", STDIN_TIMEOUT_SEC);
+        fflush(stderr);
+
+        fd_set rfds;
+        struct timeval tv;
+        FD_ZERO(&rfds);
+        FD_SET(0, &rfds); // stdin is file descriptor 0
+
+        tv.tv_sec = STDIN_TIMEOUT_SEC;
+        tv.tv_usec = 0;
+
+        int retval = select(1, &rfds, NULL, NULL, &tv);
+        if (retval == -1) {
+            perror("select()");
+            exit(1);
+        } else if (retval == 0) {
+            fprintf(stderr, "No input received on stdin after %d seconds, exiting.\n", STDIN_TIMEOUT_SEC);
+            exit(1);
+        }
+        // else, input is ready on stdin, continue as normal
     }
+
     size_t sz = 4096, used = 0;
     char *body = malloc(sz);
     body[0] = 0;
@@ -214,6 +245,18 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // SSRF protection: Only allow HTTPS for webhook URL
+    if (!is_https_url(webhook_url)) {
+        fprintf(stderr, "Refusing to use non-HTTPS webhook URL: %s\n", webhook_url);
+        return 1;
+    }
+
+    // SSRF protection: Only allow HTTPS for image URL
+    if (!is_https_url(image_url)) {
+        fprintf(stderr, "Refusing to use non-HTTPS image URL: %s\n", image_url);
+        return 1;
+    }
+
     // ENVIRONMENT: CLI > config > /etc/tier > ohai
     if (!env_arg_given) {
         if (access(config, R_OK) == 0) {
@@ -242,14 +285,13 @@ int main(int argc, char *argv[]) {
         static char temp[8192 + 8]; // static ensures temp's lifetime is until program ends
         snprintf(temp, sizeof(temp), "- %s", body);
         body_ptr = temp;
-	body_ptr_is_malloc = 0;
+        body_ptr_is_malloc = 0;
     } else if (file[0] != '\0') {
         body_ptr = read_body(file);
-	body_ptr_is_malloc = 1;
+        body_ptr_is_malloc = 1;
     } else {
-        printf("Reading body from stdin...\n");
         body_ptr = read_body(NULL);
-	body_ptr_is_malloc = 1;
+        body_ptr_is_malloc = 1;
     }
 
     replace_quotes(body_ptr);
@@ -281,7 +323,7 @@ int main(int argc, char *argv[]) {
     CURL *curl = curl_easy_init();
     if (!curl) {
         fprintf(stderr, "curl initialization failed\n");
-	if (body_ptr_is_malloc && body_ptr != NULL) free(body_ptr);
+        if (body_ptr_is_malloc && body_ptr != NULL) free(body_ptr);
         return 1;
     }
     struct curl_slist *headers = NULL;
@@ -294,7 +336,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
-	if (body_ptr_is_malloc && body_ptr != NULL) free(body_ptr);
+        if (body_ptr_is_malloc && body_ptr != NULL) free(body_ptr);
         return 1;
     }
     curl_slist_free_all(headers);
