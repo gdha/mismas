@@ -87,7 +87,7 @@ The body message can also be read from a file or from the standard input if both
 There is a default image defined (a black and white robot logo), however you may overrule it with another URL (only https:// is allowed). Keep in mind the maximum width is 279 pixels and the maximum height is 313 pixels of the image.
 
 * **--webhook** *url*:
-The URL (only https:// is allowed) of the MS Teams Power AUtomation channel.
+The URL (only https:// is allowed) of the MS Teams Power Automation channel.
 
 * **--help**:
 Shows the **alert** usage.
