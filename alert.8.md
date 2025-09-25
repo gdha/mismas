@@ -51,17 +51,20 @@ Must be a valid URL for your MS Teams workflow. An invalid URL will result in HT
 
 ## OPTIONS
 
-| Option                | Description                                                                               |
-|-----------------------|-------------------------------------------------------------------------------------------|
-| **-c**, **--config** *file*      | Specify configuration file (default: `/etc/alert.conf`)                               |
-| **-e**, **--environment** *env*  | Specify environment (overrides config and auto-detection)                            |
-| **-t**, **--title** *text*       | Title line for message (**required**)                                               |
-| **-b**, **--body** *text*        | Body text (optional if `--file` is used)                                           |
-| **-f**, **--file** *file*        | Read body text from file or stdin (required if `--body` is not used)                |
-| **-i**, **--image** *url*        | URL for logo/image (optional)                                                      |
-| **-w**, **--webhook** *url*      | Webhook URL (overrides config value)                                                |
-| **-h**, **--help**               | Display usage information                                                           |
-| **-v**, **--version**            | Display version information                                                         |
+| Option                           | Description                                                |
+|----------------------------------|------------------------------------------------------------|
+| **-c**, **--config** *file*      | Specify configuration file (default: /etc/alert.conf)      |
+| **-e**, **--environment** *env*  | Specify environment (overrides config and auto-detection)  |
+| **-t**, **--title** *text*       | Title line for message (**required**)                      |
+| **-b**, **--body** *text*        | Body text (optional if --file is used)                     |
+| **-f**, **--file** *file*        | Read body text from file or stdin                          |
+| **-i**, **--image** *url*        | URL for logo or image (optional)                           |
+| **-w**, **--webhook** *url*      | Webhook URL (overrides config value)                       |
+| **-h**, **--help**               | Display usage information                                  |
+| **-v**, **--version**            | Display version information                                |
+
+
+### GLOBAL OPTIONS
 
 * **--config** *file*:
 To overrurle the default configuration file `/etc/alert.conf`. However, it must contain at least a line like:
