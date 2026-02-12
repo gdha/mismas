@@ -6,6 +6,8 @@
 # Date: 14/Nov/2024
 # License: GPLv3
 
+# PS: check package "zerofree" which has the same purpose.
+
 # VARIABLES
 FILESYSTEMS=$(cat /proc/mounts | grep '^/dev' | awk '{print $2}')
 
